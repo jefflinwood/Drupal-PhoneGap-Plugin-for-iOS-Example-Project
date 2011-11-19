@@ -92,7 +92,7 @@
 	function onDeviceReady()
 	{
         initBindings();
-        //window.plugins.drupal.openAnonymousSession(loadFrontPage,failureCallback);
+        window.plugins.drupal.openAnonymousSession(loadFrontPage,failureCallback);
         //window.plugins.drupal.login("username","password",loadFrontPage,loadFrontPage);
         
         //window.plugins.drupal.logout(successCallback,failureCallback);
@@ -249,7 +249,7 @@
                         <label for="textarea">Body:</label>
                         <textarea cols="40" rows="8" name="nodeBody" id="nodeBody"></textarea>
                     </div>
-                    <input type="Submit"/>
+                    <input type="Submit" value="Add Article"/>
                 </form>
             </div>
         </div>
