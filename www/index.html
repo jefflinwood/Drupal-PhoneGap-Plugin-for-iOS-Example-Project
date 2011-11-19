@@ -82,7 +82,13 @@
                                                                              {quality:50});
 
                                       });
-        
+        $('#upload-photo-button').live('tap',function(event, ui) {
+                                       navigator.camera.getPicture(captureSuccess, 
+                                                                   captureError, 
+                                                                   {quality:50,
+                                                                   sourceType:navigator.camera.PictureSourceType.PHOTOLIBRARY});
+                                       
+                                       });        
     }        
 
 	/* When this function is called, PhoneGap has been initialized and is ready to roll */
@@ -225,6 +231,7 @@
             <div data-role="footer">
                 <a href="#all-content" data-role="button">All Content</a>
                 <a id="take-picture-button" href="#" data-role="button">Take Picture</a>
+                <a id="upload-photo-button" href="#" data-role="button">Upload Photo</a>
             </div>
         </div>
         <div data-role="page" id="article" data-add-back-btn="true">
