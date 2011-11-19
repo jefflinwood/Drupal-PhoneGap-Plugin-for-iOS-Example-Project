@@ -21,7 +21,10 @@
 	<key>AllowInlineMediaPlayback</key>
 	<false/>
 	<key>ExternalHosts</key>
-	<array/>
+	<array>
+		<string>code.jquery.com</string>
+		<string>www.tabletpuppy.com</string>
+	</array>
 	<key>Plugins</key>
 	<dict>
 		<key>com.phonegap.accelerometer</key>
@@ -48,6 +51,8 @@
 		<string>PGCapture</string>
 		<key>com.phonegap.splashscreen</key>
 		<string>PGSplashScreen</string>
+		<key>DrupalPlugin</key>
+		<string>DrupalPlugin</string>
 	</dict>
 </dict>
 </plist>
