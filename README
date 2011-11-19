@@ -10,6 +10,8 @@ Example Project for Drupal PhoneGap Plugin for iOS
 
 Edit DIOSConfig.h and replace the server name with your server name, and point it to your Services end point
 
+Put the same server name into the External Hosts of the PhoneGap.plist file in the XCode Project. If you don't get this right, you'll see PhoneGap complain about whitelisted hosts in the log file.
+
 You will need to configure Drupal 7.x to use Services 3.x, with the Plist Server, and with a REST endpoint
 This app uses the Node, File, User, and Views resources. Views Resource is in a separate module.
 
@@ -20,3 +22,4 @@ The project is from XCode 4.2. I don't know if it will work in earlier versions 
 Thanks for checking out this project!
 Jeff Linwood
 jlinwood@gmail.com
+http://www.jefflinwood.com/
