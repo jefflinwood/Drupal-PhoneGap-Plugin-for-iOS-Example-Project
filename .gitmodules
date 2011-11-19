@@ -1,0 +1,6 @@
+[submodule "DrupalPhoneGapApp/Classes/drupal-ios-sdk"]
+	path = DrupalPhoneGapApp/Classes/drupal-ios-sdk
+	url = git://github.com/jefflinwood/drupal-ios-sdk.git
+[submodule "DrupalPhoneGapApp/Classes/asi-http-request"]
+	path = DrupalPhoneGapApp/Classes/asi-http-request
+	url = git://github.com/jefflinwood/asi-http-request.git

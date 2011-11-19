@@ -1,0 +1,22 @@
+Example Project for Drupal PhoneGap Plugin for iOS
+
+* Uses PhoneGap 1.1.0 - http://www.phonegap.com/
+* Uses Drupal IOS SDK by Kyle Browning - https://github.com/workhabitinc/drupal-ios-sdk
+* Uses Drupal 7 - http://www.drupal.org
+* Uses ASIHTTPRequest - https://github.com/pokeb/asi-http-request
+* Uses jQuery Mobile - http://jquerymobile.com/
+* Uses Drupal PhoneGap Plugin for iOS - https://github.com/jefflinwood/Drupal-Plugin-for-PhoneGap-for-iOS
+
+
+Edit DIOSConfig.h and replace the server name with your server name, and point it to your Services end point
+
+You will need to configure Drupal 7.x to use Services 3.x, with the Plist Server, and with a REST endpoint
+This app uses the Node, File, User, and Views resources. Views Resource is in a separate module.
+
+Because login/logout with Services 3.x and sessions can be a little strange from PhoneGap, this is an area I'm working on.
+
+The project is from XCode 4.2. I don't know if it will work in earlier versions of XCode.
+
+Thanks for checking out this project!
+Jeff Linwood
+jlinwood@gmail.com
