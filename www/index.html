@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title></title>
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+	<meta charset="utf-8">
+
+        
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />        
+
+	<!-- iPad/iPhone specific css below, add after your main css >
+	<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />		
+	<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />		
+	-->
+	<!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>        
+	<script type="text/javascript" charset="utf-8" src="phonegap-1.1.0.js"></script>
+    <script type="text/javascript" charset="utf-8" src="drupal-phonegap.js"></script>
+    <script type="text/javascript">
+
+
+	// If you want to prevent dragging, uncomment this section
+	/*
+	function preventBehavior(e) 
+	{ 
+      e.preventDefault(); 
+    };
+	document.addEventListener("touchmove", preventBehavior, false);
+	*/
+	
+	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+	for more details -jm */
+	/*
+	function handleOpenURL(url)
+	{
+		// TODO: do something with the url passed in.
+	}
+	*/
+	
+	function onBodyLoad()
+	{		
+		document.addEventListener("deviceready", onDeviceReady, false);
+	}
+        
+    function initBindings() 
+    {
+        $('#articleForm').submit(function() {
+                                 var node = {
+                                 title: $("#nodeTitle").val(),
+                                 type: 'article',
+                                 body: { 
+                                 und: [{
+                                       value: $("#nodeBody").val()
+                                       }]
+                                 },
+                                 language: 'und'
+                                 
+                                 };
+                                 window.plugins.drupal.nodeSave(node,articleSaveSuccess,failureCallback);
+                                 return false;
+                                 });
+        $('#loginForm').submit(function() {
+                               window.plugins.drupal.login($("#username"), $("#password"), loginSuccessCallback,loginFailureCallback);
+                               return false;
+                               });
+        $('#deleteArticleForm').submit(function() {
+                                       var nid = $("#article").jqmData('nid');
+                                       console.log("nid" + nid);
+                                       window.plugins.drupal.nodeDelete(nid,articleDeleteSuccess,failureCallback);
+                                       
+                                       });
+        $('#all-content').live('pageshow',function(event, ui){
+                               loadAllContent();
+                               });
+        $('#take-picture-button').live('tap',function(event, ui) {
+                                       navigator.camera.getPicture(captureSuccess, 
+                                                                             captureError, 
+                                                                             {quality:50});
+
+                                      });
+        
+    }        
+
+	/* When this function is called, PhoneGap has been initialized and is ready to roll */
+	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+	for more details -jm */
+	function onDeviceReady()
+	{
+        initBindings();
+        //window.plugins.drupal.openAnonymousSession(loadFrontPage,failureCallback);
+        //window.plugins.drupal.login("username","password",loadFrontPage,loadFrontPage);
+        
+        //window.plugins.drupal.logout(successCallback,failureCallback);
+	}
+    
+    /* Drupal PhoneGap Demo Application Logic */
+        
+        var loadFrontPage = function(result) {
+            $('#frontPageArticles').html("");
+            window.plugins.drupal.viewGet("frontpage",frontPageSuccess,failureCallback);
+        }
+        var loadAllContent = function(result) {
+            $('#allNodes').html("");
+            window.plugins.drupal.nodeGetIndex(allContentSuccess,failureCallback);
+        }        
+        var articleSaveSuccess = function(result) {
+            //refresh the list of articles
+            loadFrontPage();
+        }
+        var articleDeleteSuccess = function(result) {
+            //refresh the list of articles
+            loadFrontPage();
+        }        
+        var successCallback = function(result) {
+            console.log(result);
+        }
+        var loginSuccessCallback = function(result) {
+            console.log(result);
+            loadFrontPage();
+        }
+        var loginFailureCallback = function(result) {
+            console.log(result);
+            alert(error);
+        }
+        var nodeTap = function() {
+            window.plugins.drupal.nodeGet($(this).jqmData('nid'),articleSuccess,failureCallback);
+        }
+
+        var captureSuccess = function(imageData) {
+            var file = {
+                file: imageData,
+                filename: 'file1.jpg',
+                filesize: imageData.length,
+                body: { 
+                    und: [{
+                          value: $("#nodeBody").val()
+                          }]
+                },
+                language: 'und'
+                
+            };
+            window.plugins.drupal.fileSave(file,savePictureNode,failureCallback);
+            return false;            
+        }
+        var savePictureNode = function(result) {
+            console.log(result);
+            var node = {
+                title: "Camera Picture",
+                type: 'product',
+                body: { 
+                    und: [{
+                          value: " "
+                          }]
+                },
+                field_image: { 
+                    und: [{
+                          fid: result.fid
+                          }]
+                },                
+                language: 'und'
+                
+            };
+            window.plugins.drupal.nodeSave(node,articleSaveSuccess,failureCallback);
+            return false;            
+        }
+        var captureError = function(result) {
+            console.log(result);
+        }
+        
+        var frontPageSuccess = function(result) {
+            
+            var nodes = result.view;
+            for (var i = 0; i < nodes.length; i++) {
+                var html = "<li data-nid='" + nodes[i].nid + "'><a href='#'>" + nodes[i].title + "</a></li>";
+                $(html).appendTo( '#frontPageArticles' );
+            } 
+            $('#frontPageArticles').listview('refresh');
+            $('li').live('tap', nodeTap);
+            $.mobile.changePage("#home");
+            
+        }    
+        
+        var allContentSuccess = function(result) {
+            var nodes = result.nodes;
+            for (var i = 0; i < nodes.length; i++) {
+                var html = "<li data-nid='" + nodes[i].nid + "'><a href='#'>" + nodes[i].title + "</a></li>";
+                $(html).appendTo( '#allNodes' );
+            } 
+            $('#allNodes').listview('refresh');
+            $('li').live('tap', nodeTap);
+            $.mobile.changePage("#all-content");
+            
+        }            
+        
+        var articleSuccess = function(result) {
+            $("#article").jqmData('nid',result.nid);
+            $("#articleTitle").html(result.title);
+            $("#articleContent").html(result.body.und[0].safe_value);
+            $.mobile.changePage("#article");
+            console.log(result.body.und[0]);            
+        }
+        var failureCallback = function(result) {
+            console.log(result);            
+        }                
+    </script>
+  </head>
+    <body onload="onBodyLoad()">
+        <div data-role="page" id="home">
+            <div data-role="header">
+                <a href="#add-article">Add</a>
+                <h1>Home</h1>
+                <a href="#settings" data-role="button">
+                    Settings
+                </a>
+            </div>
+            <div data-role="content" id="frontPageContent">
+                <ul data-role="listview" id="frontPageArticles" data-theme="b">
+                </ul>
+            </div>
+            <div data-role="footer">
+                <a href="#all-content" data-role="button">All Content</a>
+                <a id="take-picture-button" href="#" data-role="button">Take Picture</a>
+            </div>
+        </div>
+        <div data-role="page" id="article" data-add-back-btn="true">
+            <div data-role="header">
+                <h1 id="articleTitle"></h1>
+                <!--<a id="deleteArticle" href="#delete-article">Delete</a>-->
+            </div>
+            <div data-role="content" id="articleContent">
+            </div>
+        </div>      
+        <div data-role="page" id="add-article" data-theme="b" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>Add Article</h1>
+            </div>
+            <div data-role="content">
+                <form id="articleForm" action="" method="POST">
+                    <div data-role="fieldcontain">
+                        <label for="title">Title:</label>
+                        <input type="text" name="nodeTitle" id="nodeTitle" value=""/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="textarea">Body:</label>
+                        <textarea cols="40" rows="8" name="nodeBody" id="nodeBody"></textarea>
+                    </div>
+                    <input type="Submit"/>
+                </form>
+            </div>
+        </div>
+        <div data-role="page" id="delete-article" data-theme="b" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>Delete Article</h1>
+            </div>
+            <div data-role="content">
+                <form id="deleteArticleForm" action="" method="POST">
+                    <p>Are you sure you would like to delete the article?</p>
+                    <input type="Submit" value="Delete"/>
+                </form>
+            </div>
+        </div>
+        <div data-role="page" id="all-content" data-theme="b" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>All Content</h1>
+            </div>
+            <div data-role="content" id="allContent">
+                <ul data-role="listview" data-filter="true" id="allNodes" data-theme="b">
+                </ul>
+            </div>          
+        </div>      
+        <div data-role="page" id="settings" data-theme="b" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>Settings</h1>
+            </div>
+            <div data-role="content">
+                <form id="loginForm" method="POST" action="">
+                    <div data-role="fieldcontain">
+                        <label for="username">Username:</label>
+                        <input type="text" name="username" id="username" value=""/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" id="password" value=""/>
+                        <input type="Submit" value="Login"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
